@@ -80,6 +80,7 @@ class _RawYoutubePlayerState extends State<RawYoutubePlayer>
       ignoring: true,
       child: WebView(
         key: widget.key,
+        //TODO: uncomment as soon as implemented by webview_flutter allowsInlineMediaPlayback: true,
         userAgent:
             'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36',
         initialUrl: player,
