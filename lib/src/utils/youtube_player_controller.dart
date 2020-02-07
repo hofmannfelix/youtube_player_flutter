@@ -188,23 +188,23 @@ class YoutubePlayerController extends ValueNotifier<YoutubePlayerValue> {
   void updateValue(YoutubePlayerValue newValue) => value = newValue;
 
   /// Plays the video.
-  void play() async => await _callMethod('play()');
+  Future<void> play() async => await _callMethod('play()');
 
   /// Pauses the video.
-  void pause() async => await _callMethod('pause()');
+  Future<void> pause() async => await _callMethod('pause()');
 
   /// Loads the video as per the [videoId] provided.
-  void load(String videoId, {int startAt = 0}) {
+  Future<void> load(String videoId, {int startAt = 0}) async {
     _updateValues(videoId);
     if (value.errorCode == 1) {
-      pause();
+      await pause();
     } else {
-      _callMethod('loadById("$videoId",$startAt)');
+      await _callMethod('loadById("$videoId",$startAt)');
     }
   }
 
   /// Cues the video as per the [videoId] provided.
-  void cue(String videoId, {int startAt = 0}) async {
+  Future<void> cue(String videoId, {int startAt = 0}) async {
     _updateValues(videoId);
     if (value.errorCode == 1) {
       await pause();
@@ -228,14 +228,14 @@ class YoutubePlayerController extends ValueNotifier<YoutubePlayerValue> {
   }
 
   /// Mutes the player.
-  void mute() async => await _callMethod('mute()');
+  Future<void> mute() async => await _callMethod('mute()');
 
   /// Un mutes the player.
-  void unMute() async => await _callMethod('unMute()');
+  Future<void> unMute() async => await _callMethod('unMute()');
 
   /// Sets the volume of player.
   /// Max = 100 , Min = 0
-  void setVolume(int volume) async => volume >= 0 && volume <= 100
+  Future<void> setVolume(int volume) async => volume >= 0 && volume <= 100
       ? await _callMethod('setVolume($volume)')
       : throw Exception("Volume should be between 0 and 100");
 
@@ -243,14 +243,14 @@ class YoutubePlayerController extends ValueNotifier<YoutubePlayerValue> {
   /// The optional allowSeekAhead parameter determines whether the player will make a new request to the server
   /// if the seconds parameter specifies a time outside of the currently buffered video data.
   /// Default allowSeekAhead = true
-  void seekTo(Duration position, {bool allowSeekAhead = true}) async {
+  Future<void> seekTo(Duration position, {bool allowSeekAhead = true}) async {
     await _callMethod('seekTo(${position.inSeconds},$allowSeekAhead)');
     await play();
     updateValue(value.copyWith(position: position));
   }
 
   /// Sets the size in pixels of the player.
-  void setSize(Size size) async {
+  Future<void> setSize(Size size) async {
     var _width = size.width;
     var _height = size.height;
     if (flags.forceHideAnnotation) {
@@ -261,7 +261,7 @@ class YoutubePlayerController extends ValueNotifier<YoutubePlayerValue> {
   }
 
   /// Fits the video to screen width.
-  void fitWidth(Size screenSize) async {
+  Future<void> fitWidth(Size screenSize) async {
     var adjustedHeight = 9 / 16 * screenSize.width;
     setSize(Size(screenSize.width, adjustedHeight));
     await _callMethod(
@@ -270,16 +270,16 @@ class YoutubePlayerController extends ValueNotifier<YoutubePlayerValue> {
   }
 
   /// Fits the video to screen height.
-  void fitHeight(Size screenSize) async {
+  Future<void> fitHeight(Size screenSize) async {
     setSize(screenSize);
     await _callMethod('setTopMargin("0px")');
   }
 
   /// Sets the playback speed for the video.
-  void setPlaybackRate(double rate) async => await _callMethod('setPlaybackRate($rate)');
+  Future<void> setPlaybackRate(double rate) async => await _callMethod('setPlaybackRate($rate)');
 
   /// Toggles the player's full screen mode.
-  void toggleFullScreenMode() async =>
+  Future<void> toggleFullScreenMode() async =>
       await updateValue(value.copyWith(toggleFullScreen: true));
 
   /// MetaData for the currently loaded or cued video.
@@ -288,7 +288,7 @@ class YoutubePlayerController extends ValueNotifier<YoutubePlayerValue> {
   /// Reloads the player.
   ///
   /// The video id will reset to [initialVideoId] after reload.
-  void reload() async => await value.webViewController?.reload();
+  Future<void> reload() async => await value.webViewController?.reload();
 
   /// Resets the value of [YoutubePlayerController].
   void reset() => updateValue(
