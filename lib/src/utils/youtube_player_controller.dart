@@ -175,9 +175,9 @@ class YoutubePlayerController extends ValueNotifier<YoutubePlayerValue> {
     return _player?.controller;
   }
 
-  _callMethod(String methodString) {
+  _callMethod(String methodString) async {
     if (value.isReady) {
-      value.webViewController?.evaluateJavascript(methodString);
+      await value.webViewController?.evaluateJavascript(methodString);
     } else {
       print('The controller is not ready for method calls.');
     }
@@ -188,10 +188,10 @@ class YoutubePlayerController extends ValueNotifier<YoutubePlayerValue> {
   void updateValue(YoutubePlayerValue newValue) => value = newValue;
 
   /// Plays the video.
-  void play() => _callMethod('play()');
+  void play() async => await _callMethod('play()');
 
   /// Pauses the video.
-  void pause() => _callMethod('pause()');
+  void pause() async => await _callMethod('pause()');
 
   /// Loads the video as per the [videoId] provided.
   void load(String videoId, {int startAt = 0}) {
@@ -204,12 +204,12 @@ class YoutubePlayerController extends ValueNotifier<YoutubePlayerValue> {
   }
 
   /// Cues the video as per the [videoId] provided.
-  void cue(String videoId, {int startAt = 0}) {
+  void cue(String videoId, {int startAt = 0}) async {
     _updateValues(videoId);
     if (value.errorCode == 1) {
-      pause();
+      await pause();
     } else {
-      _callMethod('cueById("$videoId",$startAt)');
+      await _callMethod('cueById("$videoId",$startAt)');
     }
   }
 
@@ -228,59 +228,59 @@ class YoutubePlayerController extends ValueNotifier<YoutubePlayerValue> {
   }
 
   /// Mutes the player.
-  void mute() => _callMethod('mute()');
+  void mute() async => await _callMethod('mute()');
 
   /// Un mutes the player.
-  void unMute() => _callMethod('unMute()');
+  void unMute() async => await _callMethod('unMute()');
 
   /// Sets the volume of player.
   /// Max = 100 , Min = 0
-  void setVolume(int volume) => volume >= 0 && volume <= 100
-      ? _callMethod('setVolume($volume)')
+  void setVolume(int volume) async => volume >= 0 && volume <= 100
+      ? await _callMethod('setVolume($volume)')
       : throw Exception("Volume should be between 0 and 100");
 
   /// Seek to any position. Video auto plays after seeking.
   /// The optional allowSeekAhead parameter determines whether the player will make a new request to the server
   /// if the seconds parameter specifies a time outside of the currently buffered video data.
   /// Default allowSeekAhead = true
-  void seekTo(Duration position, {bool allowSeekAhead = true}) {
-    _callMethod('seekTo(${position.inSeconds},$allowSeekAhead)');
-    play();
+  void seekTo(Duration position, {bool allowSeekAhead = true}) async {
+    await _callMethod('seekTo(${position.inSeconds},$allowSeekAhead)');
+    await play();
     updateValue(value.copyWith(position: position));
   }
 
   /// Sets the size in pixels of the player.
-  void setSize(Size size) {
+  void setSize(Size size) async {
     var _width = size.width;
     var _height = size.height;
     if (flags.forceHideAnnotation) {
       _width *= 100;
       _height *= 100;
     }
-    _callMethod('setSize($_width, $_height)');
+    await _callMethod('setSize($_width, $_height)');
   }
 
   /// Fits the video to screen width.
-  void fitWidth(Size screenSize) {
+  void fitWidth(Size screenSize) async {
     var adjustedHeight = 9 / 16 * screenSize.width;
     setSize(Size(screenSize.width, adjustedHeight));
-    _callMethod(
+    await _callMethod(
       'setTopMargin("-${((adjustedHeight - screenSize.height) / 2 * 100).abs()}px")',
     );
   }
 
   /// Fits the video to screen height.
-  void fitHeight(Size screenSize) {
+  void fitHeight(Size screenSize) async {
     setSize(screenSize);
-    _callMethod('setTopMargin("0px")');
+    await _callMethod('setTopMargin("0px")');
   }
 
   /// Sets the playback speed for the video.
-  void setPlaybackRate(double rate) => _callMethod('setPlaybackRate($rate)');
+  void setPlaybackRate(double rate) async => await _callMethod('setPlaybackRate($rate)');
 
   /// Toggles the player's full screen mode.
-  void toggleFullScreenMode() =>
-      updateValue(value.copyWith(toggleFullScreen: true));
+  void toggleFullScreenMode() async =>
+      await updateValue(value.copyWith(toggleFullScreen: true));
 
   /// MetaData for the currently loaded or cued video.
   YoutubeMetaData get metadata => value.metaData;
@@ -288,7 +288,7 @@ class YoutubePlayerController extends ValueNotifier<YoutubePlayerValue> {
   /// Reloads the player.
   ///
   /// The video id will reset to [initialVideoId] after reload.
-  void reload() => value.webViewController?.reload();
+  void reload() async => await value.webViewController?.reload();
 
   /// Resets the value of [YoutubePlayerController].
   void reset() => updateValue(
