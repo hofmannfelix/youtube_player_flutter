@@ -106,14 +106,14 @@ class _RawYoutubePlayerState extends State<RawYoutubePlayer>
                   );
                   break;
                 case '0':
-                  if (widget.onEnded != null) {
-                    widget.onEnded(controller.metadata);
-                  }
                   controller.updateValue(
                     controller.value.copyWith(
                       playerState: PlayerState.ended,
                     ),
                   );
+                  if (widget.onEnded != null) {
+                    widget.onEnded(controller.metadata);
+                  }
                   break;
                 case '1':
                   controller.updateValue(
