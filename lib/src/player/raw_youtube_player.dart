@@ -90,7 +90,11 @@ class _RawYoutubePlayerState extends State<RawYoutubePlayer>
           JavascriptChannel(
             name: 'Ready',
             onMessageReceived: (JavascriptMessage message) {
+              print("Player ready $message");
               _isPlayerReady = true;
+              controller.updateValue(
+                controller.value.copyWith(isReady: true),
+              );
             },
           ),
           JavascriptChannel(
@@ -224,11 +228,12 @@ class _RawYoutubePlayerState extends State<RawYoutubePlayer>
           );
         },
         onPageFinished: (_) {
-          if (_isPlayerReady) {
-            controller.updateValue(
-              controller.value.copyWith(isReady: true),
-            );
-          }
+          //TODO: called as soon as player is ready
+//          if (_isPlayerReady) {
+//            controller.updateValue(
+//              controller.value.copyWith(isReady: true),
+//            );
+//          }
         },
       ),
     );
